@@ -5,6 +5,8 @@ const { TwitterApi } = require('twitter-api-v2');
 
 var cron = require('node-cron');
 
+console.log('App is running');
+
 const twitterApi = new TwitterApi({
   appKey: process.env.TWITTER_API_KEY,
   appSecret: process.env.TWITTER_API_SECRET,
