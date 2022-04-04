@@ -3,6 +3,9 @@ var cron = require('node-cron');
 require('dotenv').config();
 const { TwitterApi } = require('twitter-api-v2');
 
+const dayjs = require('dayjs');
+var utc = require('dayjs/plugin/utc')
+var timezone = require('dayjs/plugin/timezone')
 var cron = require('node-cron');
 
 console.log('App is running');
@@ -25,15 +28,17 @@ const getTime = async () => {
     return result;
 }
 
-const createDiff = (date, time) => {
-    date = date.split('-');
-    time.split(':')
-    var today = new Date();
-    var target = new Date(date + ' ' + time);
-    var diffMs = (target - today); // milliseconds between now & target
-    var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
-    var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
-    return diffHrs + ' jam ' + diffMins + ' menit';
+const createDiff = ({date, time}) => {
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+    let res = dayjs().tz('Asia/Jakarta');
+    let tar = dayjs(date + ' ' + time).tz('Asia/Jakarta');
+    let hour = res.diff(tar, 'hour');
+    let minute = res.diff(tar, 'minute');
+    let result = (hour < 0) ? (hour * -1) + ' jam' : '';
+    result += (minute < 0) ? ((minute % 60) * -1) + ' menit' : '';
+
+    return result;
 }
 
 if (process.env.APP_DEBUG) {
@@ -41,24 +46,20 @@ if (process.env.APP_DEBUG) {
 } else {
     cron.schedule('* * * * *', () => {
         getTime().then((res) => {
-            result = createDiff(res.date, res.time);
+            result = createDiff(res);
 
             let arr = result.split(' ');
             result += ' menuju Maghrib untuk Bandung';
 
-            if (arr[2] < 0) {
-                twitterApi.v2.post(
-                    'account/update_profile.json',
-                    { name: 'Udah buka ya?' },
-                    { prefix: 'https://api.twitter.com/1.1/' },
-                );
-            } else {
-                twitterApi.v2.post(
-                    'account/update_profile.json',
-                    { name: result },
-                    { prefix: 'https://api.twitter.com/1.1/' },
-                );
-            }
+            result = (arr[2] < 0) ? result : 'Udah buka ya?';
+
+            twitterApi.v2.post(
+                'account/update_profile.json',
+                { name: 'Udah buka ya?' },
+                { prefix: 'https://api.twitter.com/1.1/' },
+            );
+
+            console.log(result);
         });
     });
 }
