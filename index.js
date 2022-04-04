@@ -41,7 +41,7 @@ const createDiff = ({date, time}) => {
     return result;
 }
 
-if (process.env.APP_DEBUG) {
+if (process.env.APP_DEBUG == 'true') {
     console.log('App is on debug mode');
 } else {
     cron.schedule('* * * * *', () => {
