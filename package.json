@@ -1,0 +1,25 @@
+{
+  "name": "twtbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/IhsanSonz/twitter-dn-maghrib.git"
+  },
+  "author": "sonz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IhsanSonz/twitter-dn-maghrib/issues"
+  },
+  "homepage": "https://github.com/IhsanSonz/twitter-dn-maghrib#readme",
+  "dependencies": {
+    "axios": "^0.26.1",
+    "dotenv": "^16.0.0",
+    "node-cron": "^3.0.0",
+    "twitter-api-v2": "^1.11.2"
+  }
+}
