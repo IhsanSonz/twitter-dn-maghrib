@@ -38,7 +38,7 @@ const createDiff = ({date, time}) => {
     const end = (res.format('H') < 5) ? 'Shubuh' : 'Maghrib';
     const done = (res.format('H') < 12) ? 'Semangat berpuasa!' : 'Udah buka ya?';
     
-    tar = dayjs(tar.format('YYYY-MM-DD ') + waktu).tz('Asia/Jakarta');
+    tar = dayjs(tar.format('YYYY-MM-DD ') + waktu);
     let hour = res.diff(tar, 'hour') * -1;
     let minute = (res.diff(tar, 'minute') % 60) * -1;
     console.log(res.format(), tar.format());
