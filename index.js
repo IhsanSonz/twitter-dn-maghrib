@@ -38,7 +38,7 @@ const createDiff = ({date, time}) => {
     const end = (res.format('H') < 5) ? 'Shubuh' : 'Maghrib';
     const done = (res.format('H') < 12) ? 'Semangat berpuasa!' : 'Udah buka ya?';
     
-    tar = dayjs(tar.format('YYYY-MM-DD ' + waktu)).tz('Asia/Jakarta');
+    tar = dayjs(tar.format('YYYY-MM-DD ') + waktu).tz('Asia/Jakarta');
     let hour = res.diff(tar, 'hour') * -1;
     let minute = (res.diff(tar, 'minute') % 60) * -1;
     console.log(res.format(), tar.format());
@@ -62,22 +62,12 @@ if (process.env.APP_DEBUG == 'true') {
     getTime().then((res) => {
         result = createDiff(res);
 
-        let arr = result.split(' ');
-        result += ' menuju Maghrib untuk Bandung';
-
-        result = (arr[2] > 0) ? result : 'Udah buka ya?';
-
         console.log(result);
     });
 } else {
     cron.schedule('* * * * *', () => {
         getTime().then((res) => {
             result = createDiff(res);
-
-            let arr = result.split(' ');
-            result += ' menuju Maghrib untuk Bandung';
-
-            result = (arr[2] > 0 && arr[0] > 0) ? result : 'Udah buka ya?';
 
             twitterApi.v2.post(
                 'account/update_profile.json',
