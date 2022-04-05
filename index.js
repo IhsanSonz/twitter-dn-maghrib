@@ -22,23 +22,36 @@ const getTime = async () => {
     await axios.get('http://api.aladhan.com/v1/timingsByCity?city=Bandung&country=Indonesia')
         .then(res => {
             result.date = res.data.data.date.timestamp;
-            result.time = res.data.data.timings.Maghrib;
+            result.time = res.data.data.timings;
         });
 
     return result;
 }
 
 const createDiff = ({date, time}) => {
+    const {Fajr, Maghrib} = time;
     dayjs.extend(utc);
     dayjs.extend(timezone);
     let res = dayjs().tz('Asia/Jakarta');
-    let tar = dayjs.unix(date)
-    tar = dayjs(tar.format('YYYY-MM-DD ' + time)).tz('Asia/Jakarta');
-    let hour = res.diff(tar, 'hour');
-    let minute = res.diff(tar, 'minute');
-    console.log(res.diff(tar, 'hour'), (res.diff(tar, 'minute') % 60));
-    let result = (hour < 0) ? (hour * -1) + ' jam ' : '';
-    result += (minute < 0) ? ((minute % 60) * -1) + ' menit' : '';
+    let tar = dayjs.unix(date);
+    const waktu = (res.format('H') < 5) ? Fajr : Maghrib;
+    const end = (res.format('H') < 5) ? 'Shubuh' : 'Maghrib';
+    const done = (res.format('H') < 12) ? 'Semangat berpuasa!' : 'Udah buka ya?';
+    
+    tar = dayjs(tar.format('YYYY-MM-DD ' + waktu)).tz('Asia/Jakarta');
+    let hour = res.diff(tar, 'hour') * -1;
+    let minute = (res.diff(tar, 'minute') % 60) * -1;
+    console.log(res.format(), tar.format());
+    console.log(hour, minute);
+
+    let result;
+    if (hour <= 0 && minute <= 0) {
+        result = done;
+    } else {
+        result = (hour > 0) ? hour + ' jam ' : '';
+        result += (minute > 0) ? minute + ' menit ' : '';
+        result += 'menuju ' + end + ' untuk Bandung';
+    }
 
     return result;
 }

@@ -1,20 +1,28 @@
 const dayjs = require('dayjs');
 var utc = require('dayjs/plugin/utc')
 var timezone = require('dayjs/plugin/timezone')
-
+const date = 1649124714;
+const Fajr = '04:43';
+const Maghrib = '17:53';
 dayjs.extend(utc);
 dayjs.extend(timezone);
-let res = dayjs().tz('Asia/Jakarta');
-let tar = dayjs(dayjs().format('YYYY-MM-DD') + ' 17:53').tz('Asia/Jakarta');
-console.log(res.diff(tar, 'hour'), (res.diff(tar, 'minute') % 60));
+let res = dayjs('2022-04-05 03:43').tz('Asia/Jakarta');
+let tar = dayjs.unix(date);
+const waktu = (res.format('H') < 5) ? Fajr : Maghrib;
+const end = (res.format('H') < 5) ? 'Shubuh' : 'Maghrib';
+const done = (res.format('H') < 12) ? 'Semangat berpuasa!' : 'Udah buka ya?';
 
-let result = (res.diff(tar, 'hour') < 0) ? (res.diff(tar, 'hour') * -1) + ' jam ' : '';
-result += (res.diff(tar, 'minute') < 0) ? ((res.diff(tar, 'minute') % 60) * -1) + ' menit' : '';
+tar = dayjs(tar.format('YYYY-MM-DD ' + waktu)).tz('Asia/Jakarta');
+let hour = res.diff(tar, 'hour') * -1;
+let minute = (res.diff(tar, 'minute') % 60) * -1;
+console.log(hour, minute);
 
-let arr = result.split(' ');
-
-result += ' menuju Maghrib untuk Bandung';
-
-result = (arr[2] > 0) ? result : 'Udah buka ya?';
-
+let result;
+if (hour <= 0 && minute <= 0) {
+    result = done;
+} else {
+    result = (hour > 0) ? hour + ' jam ' : '';
+    result += (minute > 0) ? minute + ' menit ' : '';
+    result += 'menuju ' + end + ' untuk Bandung';
+}
 console.log(result);
