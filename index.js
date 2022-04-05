@@ -35,7 +35,7 @@ const createDiff = ({date, time}) => {
     let tar = dayjs(date + ' ' + time).tz('Asia/Jakarta');
     let hour = res.diff(tar, 'hour');
     let minute = res.diff(tar, 'minute');
-    let result = (hour < 0) ? (hour * -1) + ' jam' : '';
+    let result = (hour < 0) ? (hour * -1) + ' jam ' : '';
     result += (minute < 0) ? ((minute % 60) * -1) + ' menit' : '';
 
     return result;
