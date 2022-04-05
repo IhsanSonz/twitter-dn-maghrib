@@ -21,7 +21,7 @@ const getTime = async () => {
     let result = { date: '', time: '' };
     await axios.get('http://api.aladhan.com/v1/timingsByCity?city=Bandung&country=Indonesia')
         .then(res => {
-            result.date = res.data.data.date.timestamp;
+            result.date = res.data.data.date.readable;
             result.time = res.data.data.timings;
         });
 
@@ -33,7 +33,7 @@ const createDiff = ({date, time}) => {
     dayjs.extend(utc);
     dayjs.extend(timezone);
     let res = dayjs().tz('Asia/Jakarta');
-    let tar = dayjs.unix(date);
+    let tar = dayjs(date);
     const waktu = (res.format('H') < 5) ? Fajr : Maghrib;
     const end = (res.format('H') < 5) ? 'Shubuh' : 'Maghrib';
     const done = (res.format('H') < 12) ? 'Semangat berpuasa!' : 'Udah buka ya?';
