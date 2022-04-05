@@ -21,7 +21,7 @@ const getTime = async () => {
     let result = { date: '', time: '' };
     await axios.get('http://api.aladhan.com/v1/timingsByCity?city=Bandung&country=Indonesia')
         .then(res => {
-            result.date = res.data.data.date.gregorian.date;
+            result.date = res.data.data.date.timestamp;
             result.time = res.data.data.timings.Maghrib;
         });
 
@@ -32,9 +32,11 @@ const createDiff = ({date, time}) => {
     dayjs.extend(utc);
     dayjs.extend(timezone);
     let res = dayjs().tz('Asia/Jakarta');
-    let tar = dayjs(date + ' ' + time).tz('Asia/Jakarta');
+    let tar = dayjs.unix(date)
+    tar = dayjs(tar.format('YYYY-MM-DD ' + time)).tz('Asia/Jakarta');
     let hour = res.diff(tar, 'hour');
     let minute = res.diff(tar, 'minute');
+    console.log(res.diff(tar, 'hour'), (res.diff(tar, 'minute') % 60));
     let result = (hour < 0) ? (hour * -1) + ' jam ' : '';
     result += (minute < 0) ? ((minute % 60) * -1) + ' menit' : '';
 
@@ -43,6 +45,17 @@ const createDiff = ({date, time}) => {
 
 if (process.env.APP_DEBUG == 'true') {
     console.log('App is on debug mode');
+
+    getTime().then((res) => {
+        result = createDiff(res);
+
+        let arr = result.split(' ');
+        result += ' menuju Maghrib untuk Bandung';
+
+        result = (arr[2] > 0) ? result : 'Udah buka ya?';
+
+        console.log(result);
+    });
 } else {
     cron.schedule('* * * * *', () => {
         getTime().then((res) => {
@@ -51,11 +64,11 @@ if (process.env.APP_DEBUG == 'true') {
             let arr = result.split(' ');
             result += ' menuju Maghrib untuk Bandung';
 
-            result = (arr[2] > 0) ? result : 'Udah buka ya?';
+            result = (arr[2] > 0 && arr[0] > 0) ? result : 'Udah buka ya?';
 
             twitterApi.v2.post(
                 'account/update_profile.json',
-                { name: 'Udah buka ya?' },
+                { name: result },
                 { prefix: 'https://api.twitter.com/1.1/' },
             );
 
