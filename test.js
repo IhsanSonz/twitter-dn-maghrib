@@ -10,4 +10,11 @@ console.log(res.diff(tar, 'hour'), (res.diff(tar, 'minute') % 60));
 
 let result = (res.diff(tar, 'hour') < 0) ? (res.diff(tar, 'hour') * -1) + ' jam ' : '';
 result += (res.diff(tar, 'minute') < 0) ? ((res.diff(tar, 'minute') % 60) * -1) + ' menit' : '';
+
+let arr = result.split(' ');
+
+result += ' menuju Maghrib untuk Bandung';
+
+result = (arr[2] > 0) ? result : 'Udah buka ya?';
+
 console.log(result);

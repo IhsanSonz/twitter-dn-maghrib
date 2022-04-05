@@ -51,7 +51,7 @@ if (process.env.APP_DEBUG == 'true') {
             let arr = result.split(' ');
             result += ' menuju Maghrib untuk Bandung';
 
-            result = (arr[2] < 0) ? result : 'Udah buka ya?';
+            result = (arr[2] > 0) ? result : 'Udah buka ya?';
 
             twitterApi.v2.post(
                 'account/update_profile.json',
